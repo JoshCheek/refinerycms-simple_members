@@ -5,59 +5,27 @@ Feature: Members
   I want to manage members
 
   Background:
-    Given I am a logged in refinery user
+    # Given I am a logged in refinery user
     And I have no members
 
-  @members-list @list
-  Scenario: Members List
-   Given I have members titled UniqueTitleOne, UniqueTitleTwo
-   When I go to the list of members
-   Then I should see "UniqueTitleOne"
-   And I should see "UniqueTitleTwo"
+  Scenario: Create members
+    Then I can create these members
+      | first_name | last_name | email            | unique_identifier |
+      | Clara      | Jones     | cjones@gmail.com | A3X9              |
+      | Greg       | Watson    | gw49@hotmail.com | B932              |
+      |            |           |                  | C93P              |
 
-  @members-valid @valid
-  Scenario: Create Valid Member
-    When I go to the list of members
-    And I follow "Add New Member"
-    And I fill in "First Name" with "This is a test of the first string field"
-    And I press "Save"
-    Then I should see "'This is a test of the first string field' was successfully added."
-    And I should have 1 member
+  Scenario: Unique number is mandatory
+    Then I cannot create these members
+      | first_name | last_name | email            | unique_identifier |
+      | Clara      | Jones     | cjones@gmail.com |                   |
 
-  @members-invalid @invalid
-  Scenario: Create Invalid Member (without first_name)
-    When I go to the list of members
-    And I follow "Add New Member"
-    And I press "Save"
-    Then I should see "First Name can't be blank"
-    And I should have 0 members
+  Scenario: Number must be unique
+    Then I can create these members
+      | first_name | last_name | email                 | unique_identifier |
+      | Abe        | Lincoln   | potus@whitelhouse.gov | AAAA              |
+    Then I cannot create these members
+      | first_name | last_name | email             | unique_identifier |
+      | Jim        | Beam      | yay@happytime.com | AAAA              |
 
-  @members-edit @edit
-  Scenario: Edit Existing Member
-    Given I have members titled "A first_name"
-    When I go to the list of members
-    And I follow "Edit this member" within ".actions"
-    Then I fill in "First Name" with "A different first_name"
-    And I press "Save"
-    Then I should see "'A different first_name' was successfully updated."
-    And I should be on the list of members
-    And I should not see "A first_name"
 
-  @members-duplicate @duplicate
-  Scenario: Create Duplicate Member
-    Given I only have members titled UniqueTitleOne, UniqueTitleTwo
-    When I go to the list of members
-    And I follow "Add New Member"
-    And I fill in "First Name" with "UniqueTitleTwo"
-    And I press "Save"
-    Then I should see "There were problems"
-    And I should have 2 members
-
-  @members-delete @delete
-  Scenario: Delete Member
-    Given I only have members titled UniqueTitleOne
-    When I go to the list of members
-    And I follow "Remove this member forever"
-    Then I should see "'UniqueTitleOne' was successfully removed."
-    And I should have 0 members
- 
