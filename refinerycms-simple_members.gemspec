@@ -7,4 +7,5 @@ Gem::Specification.new do |s|
   s.summary           = 'Simple list of members that have first/last name, email, and a unique identifier.'
   s.require_paths     = %w(lib)
   s.files             = Dir['lib/**/*', 'config/**/*', 'app/**/*']
+  s.author            = 'Josh Cheek'
 end
