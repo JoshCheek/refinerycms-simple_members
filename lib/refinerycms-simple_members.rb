@@ -1,7 +1,7 @@
 require 'refinerycms-base'
 
 module Refinery
-  module Members
+  module SimpleMembers
 
     class << self
       attr_accessor :root
