@@ -1,4 +1,4 @@
-class CreateMembers < ActiveRecord::Migration
+class CreateSimpleMembers < ActiveRecord::Migration
 
   def self.up
     create_table :members do |t|
