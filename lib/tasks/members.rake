@@ -1,13 +1,15 @@
 namespace :refinery do
-  
-  namespace :members do
+  namespace :simple_members do
     
-    # call this task my running: rake refinery:members:my_task
-    # desc "Description of my task below"
-    # task :my_task => :environment do
-    #   # add your logic here
-    # end
-  
-  end
-  
+    desc 'Populate the database from a CSV file where each line is a member of the format "last_name,first_name,unique_id"'
+    task :populate_from_csv do
+      csv_file = ENV['csv']
+      unless csv_file && File.exists?(csv_file)
+        raise "Invoke like `$ rake refinery:simple_members:populate_from_csv csv=BlueMaxRoster.csv`\nNOTE: should be relative to dir of Rakefile"
+      end
+      File.open csv_file do |file|
+        Member.populate_from_csv file
+      end
+    end
+  end  
 end

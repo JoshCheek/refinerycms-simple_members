@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 
 describe 'Members' do
   before(:each) { Member.delete_all }
@@ -31,6 +32,54 @@ describe 'Members' do
     jim = Member.new :first_name => 'Jim', :last_name => 'Beam',    :email => 'yay@happytime.com'   , :unique_identifier => 'AAAA'
     -> { abe.save! }.should_not raise_error
     -> { jim.save! }.should raise_error
+  end
+  
+  describe 'loading from csv' do
+    let(:good_file) { StringIO.new <<-DATA.gsub(/^\s+/,'') }
+      "Stewart","John",973
+      "Kelly","Megyn",833
+    DATA
+    
+    let(:bad_file) { StringIO.new <<-DATA.gsub(/^\s+/,'') }
+      "Stewart","John",973
+      "Cooper","Anderson",
+      "Kelly","Megyn",833
+    DATA
+    
+    def mock_stderr
+      initial_stderr = $stderr
+      $stderr = new_stderr = StringIO.new
+      yield
+      new_stderr.rewind
+      new_stderr.read
+    ensure
+      $stderr = initial_stderr
+    end
+    
+    it 'takes files where each line is last_name, first_name, unique_identifier' do
+      Member.populate_from_csv good_file
+      Member.all.map(&:first_name).should         == %w[John     Megyn]
+      Member.all.map(&:last_name).should          == %w[Stewart  Kelly]
+      Member.all.map(&:unique_identifier).should  == %w[973      833]
+    end
+    
+    it 'omits lines where unique_identifier is nil' do
+      mock_stderr { Member.populate_from_csv bad_file }
+      Member.all.map(&:unique_identifier).should == %w[973 833]
+    end
+    
+    it 'warns about lines where unique_identifier is nil' do
+      stderr = mock_stderr { Member.populate_from_csv bad_file }
+      stderr.should =~ /Anderson/
+      stderr.should_not =~ /John/
+    end
+    
+    it 'does not repopulate records with an existing unique_identifier' do
+      Member.create! :first_name => 'John', :last_name => 'Stewart', :unique_identifier => '973'
+      mock_stderr { Member.populate_from_csv good_file }
+      Member.all.map(&:unique_identifier).should == %w[973 833]
+    end
+    
   end
 end
 
