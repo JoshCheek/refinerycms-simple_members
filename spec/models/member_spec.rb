@@ -42,11 +42,12 @@ describe 'Members' do
     
     let(:bad_file) { StringIO.new <<-DATA.gsub(/^\s+/,'') }
       "Stewart","John",973
-      "Cooper","Anderson",
+      "Hannity","Sean",
+      "Maddow","Rachel",
       "Kelly","Megyn",833
     DATA
     
-    def mock_stderr
+    def capture_stderr
       initial_stderr = $stderr
       $stderr = new_stderr = StringIO.new
       yield
@@ -63,21 +64,38 @@ describe 'Members' do
       Member.all.map(&:unique_identifier).should  == %w[973      833]
     end
     
-    it 'omits lines where unique_identifier is nil' do
-      mock_stderr { Member.populate_from_csv bad_file }
-      Member.all.map(&:unique_identifier).should == %w[973 833]
-    end
-    
-    it 'warns about lines where unique_identifier is nil' do
-      stderr = mock_stderr { Member.populate_from_csv bad_file }
-      stderr.should =~ /Anderson/
-      stderr.should_not =~ /John/
-    end
-    
     it 'does not repopulate records with an existing unique_identifier' do
       Member.create! :first_name => 'John', :last_name => 'Stewart', :unique_identifier => '973'
-      mock_stderr { Member.populate_from_csv good_file }
+      capture_stderr { Member.populate_from_csv good_file }
       Member.all.map(&:unique_identifier).should == %w[973 833]
+    end
+    
+    context 'when unique_identifier is missing' do
+      it 'makes up a unique_identifier' do
+        capture_stderr { Member.populate_from_csv bad_file }
+        identifiers = Member.all.map(&:unique_identifier)
+        identifiers.size.should == 4
+        identifiers[0].should == '973'
+        identifiers[1].should == '1'
+        identifiers[2].should == '2'
+        identifiers[3].should == '833'
+      end
+    
+      it 'informs the user' do
+        stderr = capture_stderr { Member.populate_from_csv bad_file }
+        stderr.should =~ /Hannity/
+        stderr.should =~ /Maddow/
+        stderr.should_not =~ /Stewart/
+        stderr.should_not =~ /Kelly/
+      end
+      
+      context 'and script is run twice' do
+        it 'does not put the missing user in twice' do
+          capture_stderr { Member.populate_from_csv bad_file }
+          capture_stderr { Member.populate_from_csv bad_file }
+          Member.count.should == 4
+        end
+      end
     end
     
   end
