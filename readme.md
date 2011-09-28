@@ -1,10 +1,18 @@
 # Members engine for Refinery CMS.
 
-## How to build this engine as a gem
+For information about how to use and install, see the [refinerycms-ballots gem](https://github.com/JoshCheek/refinerycms-ballots).
 
-    cd vendor/engines/members
-    gem build refinerycms-members.gemspec
-    gem install refinerycms-members.gem
-    
-    # Sign up for a http://rubygems.org/ account and publish the gem
-    gem push refinerycms-members.gem
+# About
+
+Developed by [Josh Cheek](http://joshcheek.com/) as part of my apprenticeship at [8th Light](http://www.8thlight.com/).
+
+# MIT-License
+Copyright (c) 2011 Josh Cheek
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
