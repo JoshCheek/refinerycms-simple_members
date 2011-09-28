@@ -34,6 +34,15 @@ describe 'Members' do
     -> { jim.save! }.should raise_error
   end
   
+  specify 'default sort order is ascending by last name' do
+    [ %w[barry clarkson aaa],
+      %w[carl  aldrich  bbb],
+      %w[alice barnette ccc],
+    ].each do |fname, lname, id|
+      get_member! :first_name => fname, :last_name => lname, :unique_identifier => id
+    end
+    Member.all.map(&:last_name).should == %w[aldrich barnette clarkson]
+  end
 end
 
 
